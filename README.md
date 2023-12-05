@@ -1,70 +1,85 @@
-# Getting Started with Create React App
+# React DatePicker Component
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React implementation of the jQuery UI DateTimePicker plugin.
 
-## Available Scripts
+## Overview
 
-In the project directory, you can run:
+DatePicker is a React component for selecting dates, inspired by the jQuery UI DateTimePicker plugin. It provides a user-friendly interface for choosing dates with various configuration options.
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Interactive calendar for date selection.
+- Month and year dropdowns for easy navigation.
+- Customizable date format and language/locale.
+- Support for minimum and maximum selectable dates.
+- Right-to-left display option.
+- Callback function for handling date changes.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Installation
 
-### `npm test`
+To install the DatePicker component in your React project, use the following command:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm install s3d-react-datepicker
+```
 
-### `npm run build`
+## Usage
+Import the DatePicker component into your React application:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```javascript
+import DatePicker from 's3d-react-datepicker';
+```
+Use the component in your JSX:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```javascript
+const YourComponent = () => {
+    return (
+        <div>
+            <h1>Your Application</h1>
+            <DatePicker options={{ /* Your options here */ }} />
+        </div>
+    );
+};
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Options
+The options prop allows you to configure the behavior of the DateTimePicker component. Here are some key options:
 
-### `npm run eject`
+| Option         | Description                                                 | Default Value |
+|----------------|-------------------------------------------------------------|---------------|
+| datepicker     | Enable or disable the datepicker functionality.             | true          |
+| dayOfWeekStart | Set the starting day of the week (0-6, Sunday to Saturday). | 0             |
+| defaultDate    | Set the default selected date.                              | false         |
+| format         | The date and time format to display.                        | "YYYY-MM-DD"  |
+| lang           | Set the language/locale for the component.                  | "en"          |
+| maxDate        | Set the maximum selectable date.                            | false         |
+| minDate        | Set the minimum selectable date.                            | false         |
+| rtl            | Enable or disable right-to-left layout.                     | false         |
+| yearEnd        | Set the end year for the year dropdown.                     | 2050          |
+| yearStart      | Set the start year for the year dropdown.                   | 1950          |
+| onChange       | Callback function triggered on date selection.              | null          |
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Examples
+Here's an example of using the DateTimePicker component with some common configurations:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```javascript
+const YourComponent = () => {
+    const dateTimePickerOptions = {
+        format: 'DD/MM/YYYY',
+        startDate: '01/02/2023',
+        // ... other options
+    };
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+    return (
+        <div>
+            <h1>Your Application</h1>
+            <DateTimePicker name="dateTimePicker" id="exampleDateTimePicker" options={dateTimePickerOptions} />
+        </div>
+    );
+}
+```
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## License
+This DateTimePicker component is open-source and available under the MIT License.

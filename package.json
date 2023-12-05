@@ -1,19 +1,50 @@
 {
   "name": "s3d-react-datepicker",
   "version": "0.1.0",
-  "private": true,
+  "description": "A React component for selecting dates",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "react",
+    "datepicker",
+    "calendar",
+    "date"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "moment": "^2.29.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "web-vitals": "^2.1.4"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.23.4",
+    "@babel/core": "^7.23.5",
+    "@babel/plugin-syntax-jsx": "^7.23.3",
+    "@babel/preset-env": "^7.23.5",
+    "@babel/preset-react": "^7.23.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "cross-env": "^7.0.3",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "terser": "^5.25.0"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "cross-env NODE_ENV=production babel src/lib --out-dir dist --copy-files --ignore __tests__,spec.js,test.js,__snapshots__ --minified",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -25,6 +56,9 @@
   },
   "browserslist": {
     "production": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version",
       ">0.2%",
       "not dead",
       "not op_mini all"
@@ -34,5 +68,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "URL_OF_YOUR_REPOSITORY"
   }
 }
