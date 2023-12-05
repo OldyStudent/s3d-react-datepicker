@@ -74,7 +74,7 @@ const YourComponent = () => {
     return (
         <div>
             <h1>Your Application</h1>
-            <DateTimePicker name="dateTimePicker" id="exampleDateTimePicker" options={dateTimePickerOptions} />
+            <DateTimePicker name="birthdate" id="birth-date" options={dateTimePickerOptions} />
         </div>
     );
 }
