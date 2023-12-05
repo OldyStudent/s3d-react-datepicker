@@ -68,6 +68,11 @@ const YourComponent = () => {
     const dateTimePickerOptions = {
         format: 'DD/MM/YYYY',
         startDate: '01/02/2023',
+        onChange: (selectedDate) => {
+            if (selectedDate !== null) {
+                console.log("Selected Date ", selectedDate.format("DD / MM / YYYY"))
+            }
+        }
         // ... other options
     };
 
