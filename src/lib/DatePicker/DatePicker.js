@@ -10,7 +10,7 @@
 
 import "./DatePicker.css";
 import moment from "moment";
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, {useEffect, useRef, useState, useMemo, useImperativeHandle} from "react";
 
 import DropDown from "./DropDown/DropDown";
 import IconButton from "./IconButton/IconButton";
@@ -36,7 +36,7 @@ import {
  * @param {Object} props.options - Additional options for the DatePicker.
  * @returns {JSX.Element} The DatePicker component.
  */
-const DatePicker = ({ name, id, options }) => {
+const DatePicker = ({ name, id, options }, ref) => {
   const mergedOptions = useMemo(() => {
     return { ...defaultOptions, ...options };
   }, [options]);
@@ -44,7 +44,7 @@ const DatePicker = ({ name, id, options }) => {
   moment.locale(mergedOptions.lang);
 
   const inputRef = useRef();
-  const datePickerRef = useRef();
+  const datePickerContainerRef = useRef();
   const componentContainerRef = useRef();
 
   const [inputValue, setInputValue] = useState("");
@@ -65,6 +65,18 @@ const DatePicker = ({ name, id, options }) => {
     return moment(new Date());
   });
 
+
+  // Define functions to expose using ref
+  useImperativeHandle(ref, () => ({
+    resetDatePicker : () => {
+      setSelectedCellDate(null);
+      setCurrentDate(moment());
+      setInputValue("")
+      setVisibleDropDown(null);
+    },
+  }), []);
+
+
   /**
    * Sets the input value formatted according to the specified date format.
    * @param {moment.Moment} date - The date to be formatted
@@ -81,7 +93,7 @@ const DatePicker = ({ name, id, options }) => {
     const handleOutsideClick = (e) => {
       const target = e.target;
       if (!componentContainerRef.current.contains(target)) {
-        datePickerRef.current.classList.add("hide");
+        datePickerContainerRef.current.classList.add("hide");
       }
     };
 
@@ -94,7 +106,7 @@ const DatePicker = ({ name, id, options }) => {
 
   /**
    * Handles the selection of a month.
-   * @param {number} monthIndex - The index of the selected month.
+   * @param {number} monthIndex - The selected month index 0 - 11.
    * @returns {void}
    */
   const handleSelectMonth = (monthIndex) => {
@@ -104,7 +116,7 @@ const DatePicker = ({ name, id, options }) => {
 
   /**
    * Handles the selection of a year.
-   * @param {number} yearIndex - The selected year.
+   * @param {number} yearIndex - The selected year index.
    * @returns {void}
    */
   const handleSelectYear = (yearIndex) => {
@@ -173,8 +185,8 @@ const DatePicker = ({ name, id, options }) => {
       setVisibleDropDown(null);
 
       // Hiding the DatePicker after selecting a day
-      if (datePickerRef.current) {
-        datePickerRef.current.classList.add("hide");
+      if (datePickerContainerRef.current) {
+        datePickerContainerRef.current.classList.add("hide");
       }
     }
   };
@@ -205,18 +217,19 @@ const DatePicker = ({ name, id, options }) => {
           }
         }}
         onClick={() => {
-          if (datePickerRef.current && inputRef.current) {
-            updateDatePickerContainerPosition(
-              inputRef.current,
-              datePickerRef.current,
-            );
-            datePickerRef.current.classList.toggle("hide");
+          if (datePickerContainerRef.current && inputRef.current) {
+            if (inputRef.current !== "") {
+              handleInputValidation();
+            }
+
+            updateDatePickerContainerPosition(inputRef.current, datePickerContainerRef.current,);
+            datePickerContainerRef.current.classList.toggle("hide");
             setVisibleDropDown(null);
           }
         }}
       />
       {mergedOptions.datepicker && (
-        <div className="DateTimePicker hide" ref={datePickerRef} role="dialog">
+        <div className="DateTimePicker hide" ref={datePickerContainerRef} role="dialog">
           {/* Header section */}
           <header
             className={`DateTimePicker__header ${
@@ -293,4 +306,4 @@ const DatePicker = ({ name, id, options }) => {
   );
 };
 
-export default DatePicker;
+export default React.forwardRef(DatePicker);

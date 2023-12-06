@@ -42,7 +42,45 @@ const YourComponent = () => {
 };
 ```
 
+## Props
+
+| Name      | Type            | Required | Description                                                                                                                                                                                        |
+|-----------|-----------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `name`    | string          | No       | The `name` property represents the name associated with the input field. This is useful in a form to associate the field and its value during submission.                                          |
+| `id`      | string          | No       | The `id` property is a string representing the identifier associated with the Datepicker. It can be useful when associating the Datepicker with a label, particularly for the `htmlFor` attribute. |
+| `options` | object          | No       | The `options` property is an object allowing configuration of specific Datepicker options. All options are optional.                                                                               |
+| `ref`     | React.RefObject | No       | The `ref` property is a React reference object, providing direct access to the Datepicker instance. This can be used to access functions exposed by the component.                                 |
+
+### Examples
+
+```jsx
+// Basic usage without optional props
+<Datepicker />
+
+// Using the optional 'name' prop for form association
+<Datepicker name="eventDate" />
+
+// Associating 'id' for accessibility with a label
+<label htmlFor="birthdate">Birthdate :</label>
+<Datepicker id="birthdate" />
+
+// Providing 'options' for custom configuration
+<Datepicker options={{ format: 'DD/MM/YYYY' }} />
+
+// Using 'ref' to access Datepicker functions programmatically
+const datepickerRef = useRef();
+<Datepicker ref={datepickerRef} 
+```
+
+## Exposed Functions
+
+The `Datepicker` component exposes the following functions through the `ref` prop :
+
+- `resetDatePicker()` : Resets the date picker to its initial state.
+
+
 ## Options
+
 The options prop allows you to configure the behavior of the DateTimePicker component. Here are some key options:
 
 | Option         | Description                                                 | Default Value |
@@ -65,7 +103,7 @@ Here's an example of using the DateTimePicker component with some common configu
 
 ```javascript
 const YourComponent = () => {
-    const dateTimePickerOptions = {
+    const datePickerOptions = {
         format: 'DD/MM/YYYY',
         startDate: '01/02/2023',
         onChange: (selectedDate) => {
@@ -79,7 +117,12 @@ const YourComponent = () => {
     return (
         <div>
             <h1>Your Application</h1>
-            <DateTimePicker name="birthdate" id="birth-date" options={dateTimePickerOptions} />
+            <form>
+                <label htmlFor="birthdate">Birthdate :</label>
+                <DateTimePicker name="birthdate" id="birthdate" options={datePickerOptions} />
+                <br/>
+                <input type="submit">Submit</input>
+            </form>
         </div>
     );
 }
