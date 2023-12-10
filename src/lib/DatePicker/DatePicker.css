@@ -1,32 +1,40 @@
-html {
+.S3D-DatePicker,
+.S3D-DatePicker * {
   box-sizing: border-box;
   scroll-behavior: smooth;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-.DateTimePicker {
-  --color-background: white;
-  --color-text: black;
-  --color-scroll-bar: #646464;
-  --font-size: 12px;
-  --color-calendar-grid: #d9d9d9;
-  --color-cell-hover: orange;
-  --color-other-day: #9f9f9f;
-  --color-other-weekend: #323232;
-  --color-current-day: cornflowerblue;
+.S3D-DatePicker ::-webkit-scrollbar {
+  width: 4px;
+}
 
-  background: var(--color-background);
+.S3D-DatePicker ::-webkit-scrollbar-thumb {
+  background-color: var(--s3d-dp--color-scroll-bar);
+  border-radius: 4px;
+}
+
+.S3D-DatePicker {
+  --s3d-dp--color-background: white;
+  --s3d-dp--color-calendar-grid: #d9d9d9;
+  --s3d-dp--color-cell-hover: orange;
+  --s3d-dp--color-current-day: cornflowerblue;
+  --s3d-dp--color-disabled-cell: #9f9f9f;
+  --s3d-dp--color-disabled-cell-bg: gray;
+  --s3d-dp--color-other-day: #9f9f9f;
+  --s3d-dp--color-nav-button: #9f9f9f;
+  --s3d-dp--color-nav-button--hover: black;
+  --s3d-dp--color-other-weekend: #323232;
+  --s3d-dp--color-scroll-bar: #646464;
+  --s3d-dp--color-text: black;
+  --s3d-dp--font-size: 12px;
+
+  background: var(--s3d-dp--color-background);
   padding: 5px;
   border-radius: 5px;
-  color: var(--color-text);
-  font-size: var(--font-size);
+  color: var(--s3d-dp--color-text);
+  font-size: var(--s3d-dp--font-size);
   white-space: nowrap;
   position: absolute;
   width: max-content;
@@ -34,64 +42,52 @@ html {
   z-index: 10;
 }
 
-.DateTimePicker ::-webkit-scrollbar {
-  width: 4px;
+.S3D-DatePicker__input {
 }
 
-.DateTimePicker ::-webkit-scrollbar-thumb {
-  background-color: var(--color-scroll-bar);
-  border-radius: 4px;
-}
-
-.DateTimePicker__input {
-  /*height: 32px;*/
-  /*width: 250px;*/
-  padding-inline: 11px;
-}
-
-.DateTimePicker__header {
+.S3D-DatePicker__header {
   display: grid;
   grid-template-columns: 1fr 1fr 4fr 1fr;
   place-items: center;
   justify-content: space-between;
 }
 
-.DateTimePicker__header--reversed {
+.S3D-DatePicker__header--reversed {
   direction: rtl;
 }
 
-.DateTimePicker__header__month-year-menu {
+.S3D-DatePicker__header__month-year-menu {
   display: flex;
   gap: 0.5rem;
   justify-content: center;
   font-weight: bold;
 }
 
-.DateTimePicker__calendar {
-  border: 1px solid var(--color-calendar-grid);
+.S3D-DatePicker__calendar {
+  border: 1px solid var(--s3d-dp--color-calendar-grid);
   border-radius: 4px;
 }
 
-.DateTimePicker__calendar__header,
-.DateTimePicker__calendar__body {
+.S3D-DatePicker__calendar__header,
+.S3D-DatePicker__calendar__body {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 }
 
-.DateTimePicker__calendar__header {
+.S3D-DatePicker__calendar__header {
   font-weight: bold;
   align-items: center;
 }
 
-.DateTimePicker__calendar__header div {
-  border: 1px solid var(--color-calendar-grid);
+.S3D-DatePicker__calendar__header div {
+  border: 1px solid var(--s3d-dp--color-calendar-grid);
   padding: 8px;
   text-align: center;
 }
 
 .calendar-day {
   display: grid;
-  border: 1px solid var(--color-calendar-grid);
+  border: 1px solid var(--s3d-dp--color-calendar-grid);
   align-items: center;
   justify-items: end;
   padding: 8px 5px;
@@ -99,32 +95,32 @@ html {
 }
 
 .calendar-day:not(.disabled-cell):hover {
-  background: var(--color-cell-hover);
+  background: var(--s3d-dp--color-cell-hover);
   color: white;
   cursor: pointer;
 }
 
 .other-month {
-  color: var(--color-other-day);
+  color: var(--s3d-dp--color-other-day);
 }
 
 .current-day {
-  color: var(--color-current-day);
+  color: var(--s3d-dp--color-current-day);
 }
 
 .disabled-cell {
-  background: gray;
-  color: #9f9f9f;
+  background: var(--s3d-dp--color-disabled-cell-bg);
+  color: var(--s3d-dp--color-disabled-cell);
   cursor: pointer;
 }
 
 .selected-cell {
-  background: var(--color-current-day);
+  background: var(--s3d-dp--color-current-day);
   box-shadow: #0000005c 2px 2px 8px 0 inset;
   color: white;
   font-weight: bold;
 }
 
-.hide {
+.hidden {
   display: none;
 }

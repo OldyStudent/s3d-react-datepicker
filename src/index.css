@@ -1,0 +1,12 @@
+.custom-datepickerContainer {
+  --s3d-dp--color-background: #f0f0f0;
+  --s3d-dp--color-calendar-grid: black;
+  border-radius: 20px;
+  padding: 10px;
+  /* ... other custom styles ... */
+}
+
+.custom-menu-dropdown-style {
+  padding: 10px;
+  background: teal;
+}

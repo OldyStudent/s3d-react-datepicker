@@ -1629,7 +1629,7 @@ export const defaultOptions = {
   showApplyButton: false,
   startDate: false,
   step: 60,
-  style: "",
+  styles: "",
   theme: "",
   timeHeightInTimePicker: 25,
   timepicker: true,

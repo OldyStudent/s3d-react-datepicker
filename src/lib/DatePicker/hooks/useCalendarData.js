@@ -96,12 +96,6 @@ function getCalendarMonthDays(date, firstDayOfWeek = 0, rightToLeft = false) {
 
   // Calculate the start and end of the month.
   const startOfMonth = moment(date).startOf("month");
-  const endOfMonth = moment(date).endOf("month");
-
-  // Adjust startOfMonth if it's after the provided date.
-  if (startOfMonth.isAfter(moment(date))) {
-    startOfMonth.subtract(1, "week");
-  }
 
   // Initialize the array to store days.
   const days = [];
@@ -110,12 +104,7 @@ function getCalendarMonthDays(date, firstDayOfWeek = 0, rightToLeft = false) {
     .add((firstDayOfWeek - startOfMonth.day() - 7) % 7, "days");
 
   // Iterate over days and populate the array.
-  let i = 0;
-  while (true) {
-    if (currentDay.isAfter(endOfMonth) && i % 7 === 0) {
-      break;
-    }
-
+  for (let i = 0; i < 42; i++) {
     days.push({
       index: currentDay.format("DDMMYYYY"),
       date: currentDay.clone(),
@@ -124,7 +113,6 @@ function getCalendarMonthDays(date, firstDayOfWeek = 0, rightToLeft = false) {
     });
 
     currentDay.add(1, "day");
-    i++;
   }
 
   // Reverse the order of days if right-to-left is enabled.

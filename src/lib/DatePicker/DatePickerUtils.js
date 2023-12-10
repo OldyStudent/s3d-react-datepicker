@@ -61,5 +61,36 @@ export function updateDatePickerContainerPosition(
 ) {
   const rectA = inputElement.getBoundingClientRect();
   datePickerContainer.style.top = rectA.top + rectA.height + 3 + "px";
-  datePickerContainer.style.left = rectA.left - 3 + "px";
+  datePickerContainer.style.left = rectA.left - 1 + "px";
+}
+
+/**
+ * Generates a merged object containing both className and style properties based on the provided options.
+ * @param {object} styles The options object containing the style properties.
+ * @returns {object} The merged object containing both className and style properties.
+ */
+export function generateMergedStyles(styles) {
+  if (!styles) return;
+
+  const styleProperties = [
+    "inputField",
+    "datepickerContainer",
+    "navigationSection",
+    "dropdownContainer",
+    "weekdaysHeader",
+    "daysGrid",
+  ];
+
+  const mergedStyles = {};
+
+  styleProperties.forEach((prop) => {
+    const stylingValue = styles?.[prop];
+
+    mergedStyles[prop] =
+      typeof stylingValue === "string"
+        ? { className: stylingValue, style: {} }
+        : { className: "", style: stylingValue };
+  });
+
+  return mergedStyles;
 }

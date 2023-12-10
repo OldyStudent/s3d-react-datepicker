@@ -4,20 +4,30 @@
  * @param {Object} props - Component properties.
  * @param {string} props.name - The name of the input field.
  * @param {string} props.id - The id of the input field.
+ * @param {Function} props.onChange - Function to be called when the selected date changes.
  * @param {Object} props.options - Additional options for the DatePicker.
+ * @param {React.RefObject} ref - props.ref - Optional ref to access the internal state and methods of the component.
  * @returns {JSX.Element} The DatePicker component.
  */
 
 import "./DatePicker.css";
 import moment from "moment";
-import React, {useEffect, useRef, useState, useMemo, useImperativeHandle} from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useImperativeHandle,
+  useCallback,
+} from "react";
 
 import DropDown from "./DropDown/DropDown";
 import IconButton from "./IconButton/IconButton";
-import useCalendarData from "./hooks/useCalendarData/useCalendarData";
+import useCalendarData from "./hooks/useCalendarData";
 import { defaultOptions } from "./DatePickerDefaultOptions";
 import {
   generateDayClasses,
+  generateMergedStyles,
   getMonthName,
   updateDatePickerContainerPosition,
 } from "./DatePickerUtils";
@@ -33,10 +43,12 @@ import {
  * @param {Object} props - Component properties.
  * @param {string} props.name - The name of the input field.
  * @param {string} props.id - The id of the input field.
+ * @param {Function} props.onChange - Function to be called when the selected date changes.
  * @param {Object} props.options - Additional options for the DatePicker.
+ * @param {React.RefObject} ref - props.ref - Optional ref to access the internal state and methods of the component.
  * @returns {JSX.Element} The DatePicker component.
  */
-const DatePicker = ({ name, id, options }, ref) => {
+const DatePicker = ({ name, id, onChange, options }, ref) => {
   const mergedOptions = useMemo(() => {
     return { ...defaultOptions, ...options };
   }, [options]);
@@ -44,8 +56,8 @@ const DatePicker = ({ name, id, options }, ref) => {
   moment.locale(mergedOptions.lang);
 
   const inputRef = useRef();
-  const datePickerContainerRef = useRef();
   const componentContainerRef = useRef();
+  const datePickerContainerRef = useRef();
 
   const [inputValue, setInputValue] = useState("");
   const [selectedCellDate, setSelectedCellDate] = useState(null);
@@ -65,18 +77,6 @@ const DatePicker = ({ name, id, options }, ref) => {
     return moment(new Date());
   });
 
-
-  // Define functions to expose using ref
-  useImperativeHandle(ref, () => ({
-    resetDatePicker : () => {
-      setSelectedCellDate(null);
-      setCurrentDate(moment());
-      setInputValue("")
-      setVisibleDropDown(null);
-    },
-  }), []);
-
-
   /**
    * Sets the input value formatted according to the specified date format.
    * @param {moment.Moment} date - The date to be formatted
@@ -88,39 +88,55 @@ const DatePicker = ({ name, id, options }, ref) => {
   const { dayNameList, monthNameList, yearList, calendarDayList } =
     useCalendarData(currentDate, mergedOptions);
 
+  const handleOutsideClick = useCallback((e) => {
+    const target = e.target;
+    if (!componentContainerRef.current?.contains(target)) {
+      datePickerContainerRef.current?.classList.add("hidden");
+      setVisibleDropDown(null);
+    }
+  }, []);
+
   useEffect(() => {
     // Handles clicks outside the component to hide the DatePicker.
-    const handleOutsideClick = (e) => {
-      const target = e.target;
-      if (!componentContainerRef.current.contains(target)) {
-        datePickerContainerRef.current.classList.add("hide");
-      }
-    };
-
     window.addEventListener("click", handleOutsideClick);
 
     return () => {
       window.removeEventListener("click", handleOutsideClick);
     };
-  }, []);
+  }, [handleOutsideClick]);
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(selectedCellDate);
+    }
+  }, [selectedCellDate]);
+
+  // Define functions to expose using ref
+  useImperativeHandle(
+    ref,
+    () => ({
+      resetDatePicker: () => {
+        setSelectedCellDate(null);
+        setCurrentDate(moment());
+        setInputValue("");
+        setVisibleDropDown(null);
+      },
+    }),
+    [],
+  );
 
   /**
-   * Handles the selection of a month.
-   * @param {number} monthIndex - The selected month index 0 - 11.
+   * Handles the selection of a month or a year.
+   * @param {number} index - The selected month or year index.
+   * @param {string} type - "year" or "month"
    * @returns {void}
    */
-  const handleSelectMonth = (monthIndex) => {
-    setCurrentDate((prevDate) => prevDate.clone().month(monthIndex));
-    setVisibleDropDown(null);
-  };
-
-  /**
-   * Handles the selection of a year.
-   * @param {number} yearIndex - The selected year index.
-   * @returns {void}
-   */
-  const handleSelectYear = (yearIndex) => {
-    setCurrentDate((prevDate) => prevDate.clone().year(yearIndex));
+  const handleMonthOrYearSelection = (index, type) => {
+    if (type === "month") {
+      setCurrentDate((prevDate) => prevDate.clone().month(index));
+    } else {
+      setCurrentDate((prevDate) => prevDate.clone().year(index));
+    }
     setVisibleDropDown(null);
   };
 
@@ -147,24 +163,6 @@ const DatePicker = ({ name, id, options }, ref) => {
   };
 
   /**
-   * Handles the validation of the input value and updates the state accordingly.
-   * @returns {void}
-   */
-  const handleInputValidation = () => {
-    if (!inputValue) {
-      // setCurrentDate(null);
-      setSelectedCellDate(null);
-      return;
-    }
-    const inputDate = moment(inputValue, mergedOptions.format, false);
-    const newDate = inputDate.isValid() ? inputDate : moment();
-
-    setCurrentDate(newDate);
-    setSelectedCellDate(newDate);
-    setInputFormatted(newDate);
-  };
-
-  /**
    * Handles the click event on a calendar cell.
    * @param {HTMLElement} targetElement target of The click event.
    * @param {moment.Moment} selectedDate - The date associated with the clicked cell.
@@ -175,83 +173,158 @@ const DatePicker = ({ name, id, options }, ref) => {
       return;
     }
 
-    if (mergedOptions.onChange) {
-      mergedOptions.onChange(selectedDate);
-    }
-
     if (!selectedCellDate || !selectedCellDate.isSame(selectedDate)) {
       setInputFormatted(selectedDate);
       setSelectedCellDate(selectedDate);
+      setCurrentDate(selectedDate);
       setVisibleDropDown(null);
 
       // Hiding the DatePicker after selecting a day
-      if (datePickerContainerRef.current) {
-        datePickerContainerRef.current.classList.add("hide");
+      datePickerContainerRef.current?.classList.add("hidden");
+    }
+  };
+
+  /**
+   * Handles the click event on the input field.
+   * @returns {void}
+   */
+  const handleInputClick = () => {
+    if (inputRef.current !== "") {
+      handleInputValidation();
+    }
+    // Hide visible DropDowns
+    setVisibleDropDown(null);
+
+    if (datePickerContainerRef.current) {
+      // Calculate dialog position and display it
+      updateDatePickerContainerPosition(
+        inputRef.current,
+        datePickerContainerRef.current,
+      );
+      datePickerContainerRef.current?.classList.toggle("hidden");
+    }
+  };
+
+  /**
+   * Handles the validation of the input value and updates the state accordingly.
+   * @returns {void}
+   */
+  const handleInputValidation = () => {
+    if (inputValue.trim() === "") {
+      setInputValue("");
+      setSelectedCellDate(null);
+      return;
+    }
+
+    const inputDate = moment(inputValue, mergedOptions.format, true);
+    const newDate = inputDate.isValid() ? inputDate : moment();
+    setInputFormatted(newDate);
+
+    if (!selectedCellDate || !selectedCellDate.isSame(newDate)) {
+      setCurrentDate(newDate);
+      setSelectedCellDate(newDate);
+    }
+  };
+
+  /**
+   * Handles the change event on the input field.
+   * @param {ChangeEvent} event - The change event.
+   * @returns {void}
+   */
+  const handleInputChange = (event) => {
+    const inputValue = event.target.value;
+    setInputValue(inputValue.replace(/[^0-9\s/-]/g, ""));
+
+    if (inputValue === "") {
+      setSelectedCellDate(null);
+    } else {
+      const inputDate = moment(inputValue, mergedOptions.format, true);
+
+      if (inputDate.isValid()) {
+        setCurrentDate(inputDate);
+        setSelectedCellDate(inputDate);
       }
     }
   };
 
-  const handleInputChange = (event) => {
-    const inputValue = event.target.value;
-    setInputValue(inputValue);
-
-    if (mergedOptions.onChange && inputValue === "") {
-      mergedOptions.onChange(null);
+  /**
+   * Handles the key down event on the input field, specifically the "Enter" key.
+   * @param {KeyboardEvent} event - The keyboard event.
+   * @returns {void}
+   */
+  const handleInputKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleInputValidation();
+      datePickerContainerRef.current?.classList.add("hidden");
     }
   };
+
+  const {
+    inputField,
+    datepickerContainer,
+    navigationSection,
+    dropdownContainer,
+    weekdaysHeader,
+    daysGrid,
+  } = useMemo(
+    () => generateMergedStyles(mergedOptions.styles || {}),
+    [mergedOptions.styles],
+  );
 
   return (
     <div ref={componentContainerRef}>
       <input
-        ref={inputRef}
         type="text"
-        value={inputValue}
         name={name}
         id={id}
-        className="DateTimePicker__input"
+        ref={inputRef}
+        value={inputValue}
+        className={`S3D-DatePicker__input ${inputField.className}`}
+        style={inputField.style}
         onChange={handleInputChange}
         onBlur={handleInputValidation}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            handleInputValidation();
-          }
-        }}
-        onClick={() => {
-          if (datePickerContainerRef.current && inputRef.current) {
-            if (inputRef.current !== "") {
-              handleInputValidation();
-            }
-
-            updateDatePickerContainerPosition(inputRef.current, datePickerContainerRef.current,);
-            datePickerContainerRef.current.classList.toggle("hide");
-            setVisibleDropDown(null);
-          }
-        }}
+        onKeyDown={handleInputKeyDown}
+        onClick={handleInputClick}
       />
       {mergedOptions.datepicker && (
-        <div className="DateTimePicker hide" ref={datePickerContainerRef} role="dialog">
+        <div
+          className={`S3D-DatePicker hidden ${datepickerContainer.className}`}
+          style={datepickerContainer.style}
+          ref={datePickerContainerRef}
+          role="dialog"
+        >
           {/* Header section */}
           <header
-            className={`DateTimePicker__header ${
-              mergedOptions.rtl ? "DateTimePicker__header--reversed" : ""
-            }`}
+            className={`S3D-DatePicker__header ${
+              mergedOptions.rtl ? "S3D-DatePicker__header--reversed" : ""
+            } ${navigationSection.className}`}
+            style={navigationSection.style}
           >
             {/* Previous month button */}
             <IconButton
               icon={mergedOptions.rtl ? faCaretRight : faCaretLeft}
               onClick={() => handleChangeMonth(-1)}
+              ariaLabel={mergedOptions.rtl ? "Next month" : "Previous month"}
             />
 
             {/* Reset date button */}
-            <IconButton icon={faHouse} onClick={handleResetCurrentDate} />
+            <IconButton
+              icon={faHouse}
+              onClick={handleResetCurrentDate}
+              ariaLabel="Reset to current date"
+            />
 
             {/* Month and year selection */}
-            <div className="DateTimePicker__header__month-year-menu">
+            <div
+              className={`S3D-DatePicker__header__month-year-menu ${dropdownContainer.className}`}
+              style={dropdownContainer.style}
+            >
               <DropDown
                 name="month"
                 items={monthNameList}
                 label={getMonthName(monthNameList, currentDate)}
-                onSelect={handleSelectMonth}
+                onSelect={(index) => handleMonthOrYearSelection(index, "month")}
                 isVisible={visibleDropDown === "month"}
                 setActiveDropDownName={setVisibleDropDown}
               />
@@ -260,7 +333,7 @@ const DatePicker = ({ name, id, options }, ref) => {
                 name="year"
                 items={yearList}
                 label={currentDate.format("YYYY")}
-                onSelect={handleSelectYear}
+                onSelect={(index) => handleMonthOrYearSelection(index, "year")}
                 isVisible={visibleDropDown === "year"}
                 setActiveDropDownName={setVisibleDropDown}
               />
@@ -270,19 +343,26 @@ const DatePicker = ({ name, id, options }, ref) => {
             <IconButton
               icon={mergedOptions.rtl ? faCaretLeft : faCaretRight}
               onClick={() => handleChangeMonth(1)}
+              ariaLabel={mergedOptions.rtl ? "Previous Month" : "Next month"}
             />
           </header>
 
           {/* Calendar section */}
-          <div className="DateTimePicker__calendar">
+          <div
+            className={`S3D-DatePicker__calendar ${weekdaysHeader.className}`}
+            style={weekdaysHeader.style}
+          >
             {/* Calendar header */}
-            <div className="DateTimePicker__calendar__header">
+            <div className="S3D-DatePicker__calendar__header">
               {dayNameList.map((day) => (
                 <div key={day.index}>{day.name}</div>
               ))}
             </div>
             {/* Calendar body */}
-            <div className="DateTimePicker__calendar__body">
+            <div
+              className={`S3D-DatePicker__calendar__body ${daysGrid.className}`}
+              style={daysGrid.style}
+            >
               {calendarDayList.map((currentCellDate) => (
                 <div
                   key={currentCellDate.index}

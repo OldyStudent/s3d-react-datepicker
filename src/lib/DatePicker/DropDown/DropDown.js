@@ -53,14 +53,14 @@ export default function DropDown({
         `[data-value="${label}"]`,
       );
 
-      if (selectedElement) {
+      if (selectedElement && selectedElement.scrollIntoView) {
         selectedElement.scrollIntoView({ block: "center", behavior: "smooth" });
       }
     }
   }, [label, isVisible]);
 
   return (
-    <div className="DropDown" onClick={handleToggleList}>
+    <div className="DropDown" onClick={handleToggleList} role="listbox">
       {label} <FontAwesomeIcon icon={faCaretDown} className="DropDown__icon" />
       {isVisible && (
         <ul ref={listRef} className="DropDown__list">
