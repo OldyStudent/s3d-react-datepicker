@@ -1,0 +1,59 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;require("./DatePicker.css");var _moment=_interopRequireDefault(require("moment"));var _react=_interopRequireWildcard(require("react"));var _DropDown=_interopRequireDefault(require("./DropDown/DropDown"));var _IconButton=_interopRequireDefault(require("./IconButton/IconButton"));var _useCalendarData=_interopRequireDefault(require("./hooks/useCalendarData"));var _DatePickerDefaultOptions=require("./DatePickerDefaultOptions");var _DatePickerUtils=require("./DatePickerUtils");var _freeSolidSvgIcons=require("@fortawesome/free-solid-svg-icons");function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap,t=new WeakMap;return(_getRequireWildcardCache=function(e){return e?t:r})(e)}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&Object.prototype.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u]}return n.default=e,t&&t.set(e,n),n}function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj}}/**
+ * DatePicker component for selecting dates.
+ * @module DatePicker
+ * @param {Object} props - Component properties.
+ * @param {string} props.name - The name of the input field.
+ * @param {string} props.id - The id of the input field.
+ * @param {Function} props.onChange - Function to be called when the selected date changes.
+ * @param {Object} props.options - Additional options for the DatePicker.
+ * @param {React.RefObject} ref - props.ref - Optional ref to access the internal state and methods of the component.
+ * @returns {JSX.Element} The DatePicker component.
+ */ /**
+ * Functional component representing the DatePicker.
+ * @param {Object} props - Component properties.
+ * @param {string} props.name - The name of the input field.
+ * @param {string} props.id - The id of the input field.
+ * @param {Function} props.onChange - Function to be called when the selected date changes.
+ * @param {Object} props.options - Additional options for the DatePicker.
+ * @param {React.RefObject} ref - props.ref - Optional ref to access the internal state and methods of the component.
+ * @returns {JSX.Element} The DatePicker component.
+ */const DatePicker=(_ref,ref)=>{let{name,id,onChange,options}=_ref;const mergedOptions=(0,_react.useMemo)(()=>{return{..._DatePickerDefaultOptions.defaultOptions,...options}},[options]);_moment.default.locale(mergedOptions.lang);const inputRef=(0,_react.useRef)();const componentContainerRef=(0,_react.useRef)();const datePickerContainerRef=(0,_react.useRef)();const[inputValue,setInputValue]=(0,_react.useState)("");const[selectedCellDate,setSelectedCellDate]=(0,_react.useState)(null);const[visibleDropDown,setVisibleDropDown]=(0,_react.useState)(null);const[currentDate,setCurrentDate]=(0,_react.useState)(()=>{if(mergedOptions.defaultDate){const defaultDate=(0,_moment.default)(mergedOptions.defaultDate,mergedOptions.format,false);setSelectedCellDate(defaultDate);setInputFormatted(defaultDate);return defaultDate}return(0,_moment.default)(new Date)});/**
+   * Sets the input value formatted according to the specified date format.
+   * @param {moment.Moment} date - The date to be formatted
+   */function setInputFormatted(date){setInputValue(date.format(mergedOptions.format))}const{dayNameList,monthNameList,yearList,calendarDayList}=(0,_useCalendarData.default)(currentDate,mergedOptions);const handleOutsideClick=(0,_react.useCallback)(e=>{var _componentContainerRe;const target=e.target;if(!((_componentContainerRe=componentContainerRef.current)!==null&&_componentContainerRe!==void 0&&_componentContainerRe.contains(target))){var _datePickerContainerR;(_datePickerContainerR=datePickerContainerRef.current)===null||_datePickerContainerR===void 0||_datePickerContainerR.classList.add("hidden");setVisibleDropDown(null)}},[]);(0,_react.useEffect)(()=>{// Handles clicks outside the component to hide the DatePicker.
+window.addEventListener("click",handleOutsideClick);return()=>{window.removeEventListener("click",handleOutsideClick)}},[handleOutsideClick]);(0,_react.useEffect)(()=>{if(onChange){onChange(selectedCellDate)}},[selectedCellDate]);// Define functions to expose using ref
+(0,_react.useImperativeHandle)(ref,()=>({resetDatePicker:()=>{setSelectedCellDate(null);setCurrentDate((0,_moment.default)());setInputValue("");setVisibleDropDown(null)}}),[]);/**
+   * Handles the selection of a month or a year.
+   * @param {number} index - The selected month or year index.
+   * @param {string} type - "year" or "month"
+   * @returns {void}
+   */const handleMonthOrYearSelection=(index,type)=>{if(type==="month"){setCurrentDate(prevDate=>prevDate.clone().month(index))}else{setCurrentDate(prevDate=>prevDate.clone().year(index))}setVisibleDropDown(null)};/**
+   * Handles changing the month forward or backward.
+   * @param {number} increment - The increment value for the month change.
+   * @returns {void}
+   */const handleChangeMonth=increment=>{setCurrentDate(prevDate=>prevDate.clone().add(increment,"months"));setVisibleDropDown(null)};/**
+   * Resets the current date to the current moment.
+   * @returns {void}
+   */const handleResetCurrentDate=()=>{const date=(0,_moment.default)();setSelectedCellDate(date);setCurrentDate(date);setInputFormatted(date);setVisibleDropDown(null)};/**
+   * Handles the click event on a calendar cell.
+   * @param {HTMLElement} targetElement target of The click event.
+   * @param {moment.Moment} selectedDate - The date associated with the clicked cell.
+   * @returns {void}
+   */const handleCalendarCellClick=(targetElement,selectedDate)=>{if(targetElement.classList.contains("disabled-cell")){return}if(!selectedCellDate||!selectedCellDate.isSame(selectedDate)){var _datePickerContainerR2;setInputFormatted(selectedDate);setSelectedCellDate(selectedDate);setCurrentDate(selectedDate);setVisibleDropDown(null);// Hiding the DatePicker after selecting a day
+(_datePickerContainerR2=datePickerContainerRef.current)===null||_datePickerContainerR2===void 0||_datePickerContainerR2.classList.add("hidden")}};/**
+   * Handles the click event on the input field.
+   * @returns {void}
+   */const handleInputClick=()=>{if(inputRef.current!==""){handleInputValidation()}// Hide visible DropDowns
+setVisibleDropDown(null);if(datePickerContainerRef.current){var _datePickerContainerR3;// Calculate dialog position and display it
+(0,_DatePickerUtils.updateDatePickerContainerPosition)(inputRef.current,datePickerContainerRef.current);(_datePickerContainerR3=datePickerContainerRef.current)===null||_datePickerContainerR3===void 0||_datePickerContainerR3.classList.toggle("hidden")}};/**
+   * Handles the validation of the input value and updates the state accordingly.
+   * @returns {void}
+   */const handleInputValidation=()=>{if(inputValue.trim()===""){setInputValue("");setSelectedCellDate(null);return}const inputDate=(0,_moment.default)(inputValue,mergedOptions.format,true);const newDate=inputDate.isValid()?inputDate:(0,_moment.default)();setInputFormatted(newDate);if(!selectedCellDate||!selectedCellDate.isSame(newDate)){setCurrentDate(newDate);setSelectedCellDate(newDate)}};/**
+   * Handles the change event on the input field.
+   * @param {ChangeEvent} event - The change event.
+   * @returns {void}
+   */const handleInputChange=event=>{const inputValue=event.target.value;setInputValue(inputValue.replace(/[^0-9\s/-]/g,""));if(inputValue===""){setSelectedCellDate(null)}else{const inputDate=(0,_moment.default)(inputValue,mergedOptions.format,true);if(inputDate.isValid()){setCurrentDate(inputDate);setSelectedCellDate(inputDate)}}};/**
+   * Handles the key down event on the input field, specifically the "Enter" key.
+   * @param {KeyboardEvent} event - The keyboard event.
+   * @returns {void}
+   */const handleInputKeyDown=event=>{if(event.key==="Enter"){var _datePickerContainerR4;event.preventDefault();handleInputValidation();(_datePickerContainerR4=datePickerContainerRef.current)===null||_datePickerContainerR4===void 0||_datePickerContainerR4.classList.add("hidden")}};const{inputField,datepickerContainer,navigationSection,dropdownContainer,weekdaysHeader,daysGrid}=(0,_react.useMemo)(()=>(0,_DatePickerUtils.generateMergedStyles)(mergedOptions.styles||{}),[mergedOptions.styles]);return/*#__PURE__*/_react.default.createElement("div",{ref:componentContainerRef},/*#__PURE__*/_react.default.createElement("input",{type:"text",name:name,id:id,ref:inputRef,value:inputValue,className:"S3D-DatePicker__input ".concat(inputField.className),style:inputField.style,onChange:handleInputChange,onBlur:handleInputValidation,onKeyDown:handleInputKeyDown,onClick:handleInputClick}),mergedOptions.datepicker&&/*#__PURE__*/_react.default.createElement("div",{className:"S3D-DatePicker hidden ".concat(datepickerContainer.className),style:datepickerContainer.style,ref:datePickerContainerRef,role:"dialog"},/*#__PURE__*/_react.default.createElement("header",{className:"S3D-DatePicker__header ".concat(mergedOptions.rtl?"S3D-DatePicker__header--reversed":""," ").concat(navigationSection.className),style:navigationSection.style},/*#__PURE__*/_react.default.createElement(_IconButton.default,{icon:mergedOptions.rtl?_freeSolidSvgIcons.faCaretRight:_freeSolidSvgIcons.faCaretLeft,onClick:()=>handleChangeMonth(-1),ariaLabel:mergedOptions.rtl?"Next month":"Previous month"}),/*#__PURE__*/_react.default.createElement(_IconButton.default,{icon:_freeSolidSvgIcons.faHouse,onClick:handleResetCurrentDate,ariaLabel:"Reset to current date"}),/*#__PURE__*/_react.default.createElement("div",{className:"S3D-DatePicker__header__month-year-menu ".concat(dropdownContainer.className),style:dropdownContainer.style},/*#__PURE__*/_react.default.createElement(_DropDown.default,{name:"month",items:monthNameList,label:(0,_DatePickerUtils.getMonthName)(monthNameList,currentDate),onSelect:index=>handleMonthOrYearSelection(index,"month"),isVisible:visibleDropDown==="month",setActiveDropDownName:setVisibleDropDown}),/*#__PURE__*/_react.default.createElement(_DropDown.default,{name:"year",items:yearList,label:currentDate.format("YYYY"),onSelect:index=>handleMonthOrYearSelection(index,"year"),isVisible:visibleDropDown==="year",setActiveDropDownName:setVisibleDropDown})),/*#__PURE__*/_react.default.createElement(_IconButton.default,{icon:mergedOptions.rtl?_freeSolidSvgIcons.faCaretLeft:_freeSolidSvgIcons.faCaretRight,onClick:()=>handleChangeMonth(1),ariaLabel:mergedOptions.rtl?"Previous Month":"Next month"})),/*#__PURE__*/_react.default.createElement("div",{className:"S3D-DatePicker__calendar ".concat(weekdaysHeader.className),style:weekdaysHeader.style},/*#__PURE__*/_react.default.createElement("div",{className:"S3D-DatePicker__calendar__header"},dayNameList.map(day=>/*#__PURE__*/_react.default.createElement("div",{key:day.index},day.name))),/*#__PURE__*/_react.default.createElement("div",{className:"S3D-DatePicker__calendar__body ".concat(daysGrid.className),style:daysGrid.style},calendarDayList.map(currentCellDate=>/*#__PURE__*/_react.default.createElement("div",{key:currentCellDate.index,className:(0,_DatePickerUtils.generateDayClasses)(selectedCellDate,currentCellDate,mergedOptions),onClick:event=>handleCalendarCellClick(event.target,currentCellDate.date)},currentCellDate.date.format("D")))))))};var _default=exports.default=/*#__PURE__*/_react.default.forwardRef(DatePicker);

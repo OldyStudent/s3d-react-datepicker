@@ -1,0 +1,11 @@
+.IconButton__button {
+  color: var(--s3d-dp--color-other-day);
+  cursor: pointer;
+  padding: 8px 16px;
+  transition: all 350ms ease-out;
+}
+
+.IconButton__button:hover {
+  color: var(--s3d-dp--color-text);
+  transform: scale(1.2);
+}

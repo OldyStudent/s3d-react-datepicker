@@ -1,0 +1,35 @@
+.DropDown {
+  position: relative;
+  cursor: pointer;
+  padding: 8px 16px;
+}
+
+.DropDown__icon {
+  margin-left: 2px;
+}
+
+.DropDown__list {
+  font-weight: normal;
+  width: max-content;
+  max-height: 300px;
+  overflow-y: scroll;
+  background: var(--s3d-dp--color-background);
+  color: var(--s3d-dp--color-text);
+  font-size: var(--s3d-dp--font-size);
+  position: absolute;
+  left: 50%;
+  top: 32px;
+  transform: translateX(-50%);
+  box-shadow: 2px 3px 5px 0 #00000080;
+}
+
+.DropDown__list li {
+  padding: 8px 16px;
+  border: 1px solid var(--s3d-dp--color-calendar-grid);
+  transition: all 300ms ease-out;
+}
+
+.DropDown__list li:hover {
+  background: var(--s3d-dp--color-cell-hover);
+  color: white;
+}
